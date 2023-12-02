@@ -1,8 +1,8 @@
 # Virtual Environements and requirements.txt
+# Step1 - Working in VENV (create, activate, deactivate)
 ***********************************************************
-
 CREATE A VIRTUAL ENVIRONMENT VENV
-------------------------------------------------------
+
 https://docs.python.org/3/library/venv.html
 https://www.geeksforgeeks.org/creating-python-virtual-environment-windows-linux/
 
@@ -48,10 +48,9 @@ You can also use:
 > 
 > conda deactivate
 
---------------------------------------------------------
 
-## CREATE YOUR "requirements.txt" FILE 
-
+# Step 2 -Create your "requirements.txt" file 
+***********************************************************
 > pip list
 
 TO CREATE FILE - Option 1
@@ -70,17 +69,17 @@ ALTERNATIVELY - Option 2
 
 > pip freeze > requirements.txt
 >
-> pip list --format=freeze > requirements.txt
+> pip list --format=freeze > requirements.txt (recommended)
 
 INSTALL "requirements.txt" FILE IN A PROJECT
 
 > pip install -r "requirements.txt"
 
---------------------------------------------------------
 
+# Step 3 - Working with Dockers (Dockerfile, Image, Container)
+***********************************************************
 DOCKERS --> Dokerfile (in the root) same place as requirements.txt
 
-# Dockerfile, Image, Container
 <pre>
 FROM python:3.8                      < image >
 FROM python
@@ -102,18 +101,186 @@ CMD ["python", "./app/main.py"]       < command >  ["< executable >", "< param >
 CMD ["c:\\Apache24\\bin\\httpd.exe", "-w"]
 </pre>
 --------------------------------------------------------
+# RUN = pull + create + start
 
+- $ docker pull python:3.9
+
+- $ docker pull python --> last version
+
+- $ docker create --name < container_name > python:3.9
+
+- $ docker start < container_name >
+
+$ docker run -it --name < container_name > python:3.9 /bin/bash
+
+or case MySQL
+
+$ docker run -it --name < container_name > -e MYSQL_ROOT_PASSWORD=root -d mysql/mysql -server:5.7 mysql
+
+$ docker exec -it < container_name > /bin/bash
+
+- $ docker container stop < container_name >
+
+## Getting Help
 Terminal:
 
-$ docker -v
+Display Docker version with docker --version
 
-### Building the image
+$ docker --version
 
-$ docker -t python-imdb .
+$ docker -v  (only Docker version)
 
-$ docker run python-imdb
+Display Docker system info with docker info
 
-### After modify python script build again
+$ docker info
+
+Get help on Docker with docker --help
+
+$ docker --help
+
+Get help on Docker command usage with docker {command} --help
+
+$ docker run --help
+
+- (-t = --tty, -i = --interactive, -d = --detashed, -e = --env, -p = --publish, -rm = --remove, -a = --all)
+
+## Building Images
+
+$ docker image ls
+
+Build an image with docker build {path}
+
+$ docker build .
+
+Build a tagged image with docker build --tag {name:tag} {path}
+
+$ docker build --tag myimage:2023-edition .
+
+Build an image without using the cache docker build -no-cache {path}
+
+$ docker build --no-cache .
+
+## Image Management
+
+List all local images with docker images
+
+$ docker images
+
+Show Docker disk usage with docker system df
+
+$ docker system df
+
+Show image creation steps from intermediate layers with docker history {image}
+
+$ docker history alpine
+
+Save an image to a file with docker save --output {filename}
+Usually combined with a compression tool like gzip
+
+$ docker save julia | gzip > julia.tar.gz
+
+Load an image from a file with docker load --input {filename}
+
+$ docker load --input julia.tar.gz
+
+Delete an image with docker rmi {image}
+
+$ docker -rmi rocker/r-base
+
+
+## Inspecting Containers
+
+List all running containers with docker ps
+
+$ docker container ls
+
+$ docker ps
+
+List all containers with docker ls --all
+
+$ docker container ls --all
+
+List all containers matching a conditions with docker ls --filter {key}={value}
+
+$ docker container ls --filter 'name=red1'
+
+Show container log output with docker logs --follow {container}
+
+$ docker run --name bb busybox sh -c "$(echo date)"  --> Print current datetime
+
+$ dockerlogs --follow bb   --> Print what bb container printed
+
+
+
+## Running Containers
+
+Run a container with docker run {image}
+
+$ docker run hello-world  --> Runs a test container to check your installation works
+
+Run a container then use it to run a command with docker run {image} {command}
+
+$ docker run python python -c "print('Python in Docker')"  --> Run Python & print text
+
+$ docker run rocker/r-base r -e "print(lm(disc`speed, cars))" --> Run R & print a model
+
+Run a container interactively with docker run --interactive --tty
+
+$ docker run --interactive --tty rocker/r-base  --> Run R interactively
+
+Run a container, and remove it once you've finished with docker run --rm
+
+$ docker run --rm mysql --> Run MySQL, then clean up
+
+Run an image in the background with docker run --detach
+
+$ docker run --detach postgres
+
+Run an image, assigning a name, with docker --name {name} run
+
+$ docker run --name red1 redis --> Run redis, naming the container as red1
+
+Run an image as a user with docker run --user {username}
+
+$ docker run --user doctordocker mongo
+
+## Creating a Network
+
+$ docker network ls
+
+$ docker network --help
+
+$ docker network create my_app_net   < network_name >
+
+$ docker network inspect my_app_net
+
+$ docker container run -d --name < container_name > --network < network_name > nginx
+
+$ docker container run -d --name new_nginx --network my_app_net nginx
+
+## Connect a container to a network when it starts
+
+$ docker network connect < network_name > < container_name > (Connect "Id" Network of  "Driver": "bridge", 8facc8c8429a to a Container) 
+
+$ docker network connect my_app_net db
+
+$ docker network inspect < network_name >
+
+$ docker container inspect < container_name >
+
+$ docker network disconnect < network_name > < container_name >   (Disconnect a Container to a Network)
+
+$ docker network disconnect bridge db 
+
+$ docker network disconnect bridge webhost
+
+$ docker network disconnect bridge proxy
+
+$ docker network ls ( active only )
+
+$ docker network ls -a  (-all = active+stopped)
+
+### After modify your python script build again
 
 $ docker build -t python-imdb .
 
@@ -126,11 +293,16 @@ $ docker exec -it 14b15c25c /bin/sh
 $ ls
 
 
-### After modifying script python build again
+### After modifying your python script build again
 
 $ docker build -t python-fastapi .
+
 
 $ docker run -p 8000:8000 python-fastapi
 
 Docker Tutorial For Beginners - How To Containerize Python Applications
 https://www.youtube.com/watch?v=bi0cKgmRuiA&t=695s
+
+
+![Docker CheatSheet](./Docker_cheat_sheet.png)
+![Image PDF](./cheat-sheet-v2.pdf)
