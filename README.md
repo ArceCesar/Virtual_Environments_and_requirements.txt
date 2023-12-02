@@ -305,4 +305,3 @@ https://www.youtube.com/watch?v=bi0cKgmRuiA&t=695s
 
 
 ![Docker CheatSheet](./Docker_cheat_sheet.png)
-![Image PDF](./cheat-sheet-v2.pdf)
