@@ -114,6 +114,7 @@ pip list --format=freeze > requirements.txt (recommended)
 ```
 
 INSTALL "requirements.txt" FILE IN A PROJECT
+
 ```
 pip install -r "requirements.txt"
 ```
